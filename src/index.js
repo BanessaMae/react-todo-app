@@ -20,15 +20,14 @@ maxId =100;
     // term:'',
     filter : 'all' 
   };
-
  
-
   onItemAdded = (text) => {
     const newItem = {
       id: ++this.maxId,
       label:text,
       important: false,
-      done: false
+      done: false,
+      date: new Date(),
     };
     this.setState(({todoData})=>{
       const newArr = [

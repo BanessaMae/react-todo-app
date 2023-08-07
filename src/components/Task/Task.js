@@ -1,13 +1,17 @@
 import React, {Component} from "react";
 import './Task.css';
-import { findAllByTestId } from "@testing-library/react";
+import { formatDistanceToNow } from 'date-fns';
+import RU from 'date-fns/locale/en-AU';
+import PropTypes from 'prop-types';
+
 
 export default class Task extends Component {
     render(){
         const { label,  onDeleted, 
             onToggleImportant, 
             onToggleDone,
-            important, done} = this.props;
+            important,  done, date,item} = this.props;
+
 
         let classNames ;
         if ( done ){
@@ -19,6 +23,13 @@ export default class Task extends Component {
             <input className="toggle" type="checkbox" onClick={onToggleDone}></input>
             <label >
                 <span className="description"> {label}</span>
+                <span className="created">
+                {`created ${formatDistanceToNow(date, {
+                includeSeconds: true,
+                locale: RU,
+                addSuffix: true,
+              })}`}
+              </span>
                 <button className="icon icon-edit"onClick={onToggleImportant}> </button>
                 <button className="icon icon-destroy" onClick={onDeleted}></button>
             </label>
@@ -27,5 +38,23 @@ export default class Task extends Component {
             );
     }
 }
+
+Task.propTypes = {
+   item: PropTypes.shape({
+      id: PropTypes.number,
+      label: PropTypes.string,
+      done: PropTypes.bool,
+      date: PropTypes.instanceOf(Date),
+    }),
+    onDeleted: PropTypes.func.isRequired,
+    onToggleDone: PropTypes.func.isRequired,
+    // editItem: PropTypes.func.isRequired,
+  };
+  
+  Task.defaultProps = {
+    date: PropTypes.instanceOf(Date),
+    item: {},
+  };
+
 
 
