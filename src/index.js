@@ -22,7 +22,7 @@ export default class App extends Component {
 
   onItemAdded = (text) => {
     const newItem = {
-      id: ++this.maxId,
+      id: this.state.todoData.length + 1,
       label: text,
       important: false,
       done: false,
@@ -45,6 +45,14 @@ export default class App extends Component {
       };
     });
   };
+  editItem(ident, text) {
+    this.setState(({ todoData }) => ({
+      todos: todoData.map((element) => {
+        if (element.id === ident) element.body = text;
+        return element;
+      }),
+    }));
+  }
 
   toggleProperty(arr, id, propName) {
     const idx = arr.findIndex((el) => el.id === id);
@@ -104,6 +112,7 @@ export default class App extends Component {
           onDeleted={this.deleteItem}
           onToggleImportant={this.onToggleImportant}
           onToggleDone={this.onToggleDone}
+          editItem={this.editItem.bind(this)}
         />
         <Footer
           toDo={todoCount}

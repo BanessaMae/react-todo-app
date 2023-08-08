@@ -5,19 +5,20 @@ import Task from '../Task/Task.js';
 
 export default class TaskList extends Component {
   render() {
-    const { todos, onDeleted, onToggleImportant, onToggleDone } = this.props;
+    const { todos, onDeleted, onToggleImportant, onToggleDone, editItem } = this.props;
 
     const elements = todos.map((item) => {
       const { id, ...itemProps } = item;
 
       return (
         <Task
-          key={id}
+          key={item.id}
           {...itemProps}
           onDeleted={() => onDeleted(id)}
           onToggleImportant={() => onToggleImportant(id)}
           onToggleDone={() => onToggleDone(id)}
           date={new Date()}
+          editItem={() => editItem(id)}
         />
       );
     });
@@ -33,7 +34,7 @@ export default class TaskList extends Component {
 TaskList.propTypes = {
   todos: PropTypes.any,
   onToggleDone: PropTypes.func.isRequired,
-  // editItem: PropTypes.func.isRequired,
+  editItem: PropTypes.func.isRequired,
   onDeleted: PropTypes.func.isRequired,
 };
 
