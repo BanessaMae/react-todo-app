@@ -9,63 +9,65 @@
       "plugin:react/recommended",
       "plugin:prettier/recommended",
       "plugin:import/errors",
-      "plugin:import/warnings",
-      "airbnb",
-      "airbnb/hooks",
-      "plugin:jsx-a11y/recommended",
-      "plugin:react-hooks/recommended",
-      "plugin:react/jsx-runtime",
-      "plugin:import/recommended",
-      "prettier"
+      "plugin:import/warnings"
     ],
+    "parser": "@babel/eslint-parser",
     "parserOptions": {
+      "babelOptions": {
+        "parserOpts": {
+          "plugins": ["jsx"]
+        }
+      },
+      "requireConfigFile": false,
+      "ecmaVersion": 12,
+      "sourceType": "module",
       "ecmaFeatures": {
         "jsx": true
-      },
-      "ecmaVersion": "latest",
-      "sourceType": "module",
-      "allowImportExportEverywhere": false,
-      "codeFrame": true
-      // "babelOptions": {
-      //   "babelrc": false,
-      //   "configFile": false,
-      //   "presets": "@babel/preset-env"
-      // }
+      }
     },
-    
-    "parser": "@babel/eslint-parser",
-    "plugins": ["react", "prettier", "import", "jsx-a11y"],
+    "plugins": [
+      "react",
+      "prettier",
+      "import"
+    ],
     "rules": {
-      "indent": ["error", 2],
+      "indent": [
+        "error",
+        2,
+        {
+          "SwitchCase": 1
+        }
+      ],
       "prettier/prettier": ["error", { "endOfLine": "auto" }],
-      "arrow-body-style": "off",
-      "prefer-arrow-callback": "off",
       "linebreak-style": [0, "unix"],
-      "quotes": [2, "single", { "avoidEscape": true }],
-      "semi": 0,
+      "quotes": ["error", "single"],
+      "semi": [2, "always"],
       "react/react-in-jsx-scope": "off",
-      "react/jsx-uses-react": "error",
-      "react/jsx-uses-vars": "error",
       "react/prop-types": 0,
-      "jsx-a11y/rule-name": 2,
-      "import/no-unresolved": [2, { "caseSensitive": false }],
-      "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+      "import/no-unresolved": [
+        2,
+        {
+          "caseSensitive": false
+        }
+      ],
+      "react/jsx-filename-extension": [
+        1,
+        {
+          "extensions": [".js", ".jsx"]
+        }
+      ],
       "import/order": [
         2,
         {
-          "groups": [
-            "builtin",
-            "external",
-            "internal",
-            "parent",
-            "sibling",
-            "index"
-          ],
+          "groups": ["builtin", "external", "internal", "parent", "sibling", "index"],
           "newlines-between": "always"
         }
       ]
     },
     "settings": {
+      "react": {
+        "version": "detect"
+      },
       "import/resolver": {
         "node": {
           "extensions": [".js", ".jsx", ".ts", ".tsx"],
