@@ -24,17 +24,22 @@ export default class App extends Component {
     const newItem = {
       id: this.state.todoData.length + 1,
       body: value,
+      important: false,
       done: false,
       date: new Date(),
     };
     this.setState(({ todoData }) => ({ todoData: [...todoData, newItem] }));
   };
 
-  deleteItem(ident) {
-    this.setState(({ todos }) => ({
-      todos: todos.filter(({ id }) => id !== ident),
-    }));
-  }
+  onDeleted = (id) => {
+    this.setState(({ todoData }) => {
+      const idx = todoData.findIndex((el) => el.id === id);
+      const newArray = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
+      return {
+        todoData: newArray,
+      };
+    });
+  };
   editItem(ident, text) {
     this.setState(({ todoData }) => ({
       todoData: todoData.map((element) => {
@@ -60,13 +65,13 @@ export default class App extends Component {
     });
   };
 
-  // onToggleImportant = (id) => {
-  //   this.setState(({ todoData }) => {
-  //     return {
-  //       todoData: this.toggleProperty(todoData, id, 'important'),
-  //     };
-  //   });
-  // };
+  onToggleImportant = (id) => {
+    this.setState(({ todoData }) => {
+      return {
+        todoData: this.toggleProperty(todoData, id, 'important'),
+      };
+    });
+  };
 
   filter(items, filter) {
     if (filter === 'all') {
@@ -95,22 +100,24 @@ export default class App extends Component {
     const todoCount = todoData.length - doneCount;
 
     return (
-      <section className="todoapp">
-        <NewTaskForm onItemAdded={this.onItemAdded} />
-        <TaskList
-          todos={visibleItems}
-          onDeleted={this.deleteItem.bind(this)}
-          // onToggleImportant={this.onToggleImportant}
-          onToggleDone={this.onToggleDone.bind(this)}
-          editItem={this.editItem.bind(this)}
-        />
-        <Footer
-          toDo={todoCount}
-          filter={filter}
-          onFilterChange={this.onFilterChange}
-          clearCompleted={this.clearCompleted.bind(this)}
-        />
-      </section>
+      <React.Fragment>
+        <section className="todoapp">
+          <NewTaskForm onItemAdded={this.onItemAdded} />
+          <TaskList
+            todos={visibleItems}
+            onDeleted={this.onDeleted.bind(this)}
+            onToggleImportant={this.onToggleImportant.bind(this)}
+            onToggleDone={this.onToggleDone.bind(this)}
+            editItem={this.editItem.bind(this)}
+          />
+          <Footer
+            toDo={todoCount}
+            filter={filter}
+            onFilterChange={this.onFilterChange}
+            clearCompleted={this.clearCompleted.bind(this)}
+          />
+        </section>
+      </React.Fragment>
     );
   }
 }
@@ -118,4 +125,8 @@ export default class App extends Component {
 const container = document.getElementById('root');
 const root = createRoot(container);
 
-root.render(<App />);
+root.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>
+);

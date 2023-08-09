@@ -5,14 +5,15 @@ import Task from '../Task/Task.js';
 
 export default class TaskList extends Component {
   render() {
-    const { todos, onDeleted, onToggleDone, editItem } = this.props;
-
+    const { todos, onToggleDone, editItem, onDeleted } = this.props;
     return (
-      <ul className="todo-list">
-        {todos.map((todo) => (
-          <Task key={todo.id} changeCheck={onToggleDone} editItem={editItem} deleteItem={onDeleted} todo={todo} />
-        ))}
-      </ul>
+      <React.Fragment>
+        <ul className="todo-list">
+          {todos.map((todo) => (
+            <Task key={todo.id} onToggleDone={onToggleDone} editItem={editItem} onDeleted={onDeleted} todo={todo} />
+          ))}
+        </ul>
+      </React.Fragment>
     );
   }
 }

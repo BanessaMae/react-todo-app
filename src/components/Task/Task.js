@@ -26,48 +26,50 @@ export default class Task extends Component {
     const { onDeleted, onToggleDone, todo } = this.props;
     const { body, id, done, date } = todo;
     return (
-      <li className={done ? 'completed' : this.state.editing ? 'editing' : null}>
-        <div className="view">
-          <input
-            id={id}
-            className="toggle"
-            type="checkbox"
-            onChange={(event) => onToggleDone(id, event.target.done)}
-            checked={done}
-          />
-          <label htmlFor={id}>
-            <span className="description"> {body}</span>
-            <span className="created">
-              {`created ${formatDistanceToNow(date, {
-                includeSeconds: true,
-                locale: RU,
-                addSuffix: true,
-              })}`}
-            </span>
-            <button
-              className="icon icon-edit"
-              type="button"
-              onClick={() =>
-                this.setState(({ editing }) => ({
-                  editing: !editing,
-                  value: this.props.todo.body,
-                }))
-              }
-            ></button>
-            <button type="button" onClick={() => onDeleted(id)} className="icon icon-destroy" />
-          </label>
-        </div>
-        {this.state.editing && (
-          <form onSubmit={this.handleSubmit.bind(this)}>
+      <React.Fragment>
+        <li className={done ? 'completed' : this.state.editing ? 'editing' : null}>
+          <div className="view">
             <input
-              onChange={(event) => this.setState({ value: event.target.value })}
-              type="text"
-              className="edit"
-              value={this.state.value}
-            />
-          </form>
-        )}
-      </li>
+              id={id}
+              className="toggle"
+              type="checkbox"
+              onChange={(event) => onToggleDone(id, event.target.done)}
+              checked={done}
+            ></input>
+            <label htmlFor={id}>
+              <span className="description"> {body}</span>
+              <span className="created">
+                {`created ${formatDistanceToNow(date, {
+                  includeSeconds: true,
+                  locale: RU,
+                  addSuffix: true,
+                })}`}
+              </span>
+              <button
+                className="icon icon-edit"
+                type="button"
+                onClick={() =>
+                  this.setState(({ editing }) => ({
+                    editing: !editing,
+                    value: this.props.todo.body,
+                  }))
+                }
+              ></button>
+              <button className="icon icon-destroy" onClick={() => onDeleted(id)}></button>
+            </label>
+          </div>
+          {this.state.editing && (
+            <form onSubmit={this.handleSubmit.bind(this)}>
+              <input
+                onChange={(event) => this.setState({ value: event.target.value })}
+                type="text"
+                className="edit"
+                value={this.state.value}
+              />
+            </form>
+          )}
+        </li>
+      </React.Fragment>
     );
   }
 }
@@ -79,9 +81,9 @@ Task.propTypes = {
     done: PropTypes.bool,
     date: PropTypes.instanceOf(Date),
   }),
-  // onDeleted: PropTypes.func.isRequired,
-  // onToggleDone: PropTypes.func.isRequired,
-  // editItem: PropTypes.func.isRequired,
+  onDeleted: PropTypes.func.isRequired,
+  onToggleDone: PropTypes.func.isRequired,
+  editItem: PropTypes.func.isRequired,
 };
 
 Task.defaultProps = {
