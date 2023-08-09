@@ -20,34 +20,24 @@ export default class App extends Component {
     filter: 'all',
   };
 
-  onItemAdded = (text) => {
+  onItemAdded = (value) => {
     const newItem = {
       id: this.state.todoData.length + 1,
-      label: text,
-      important: false,
+      body: value,
       done: false,
       date: new Date(),
     };
-    this.setState(({ todoData }) => {
-      const newArr = [...todoData, newItem];
-      return {
-        todoData: newArr,
-      };
-    });
+    this.setState(({ todoData }) => ({ todoData: [...todoData, newItem] }));
   };
 
-  deleteItem = (id) => {
-    this.setState(({ todoData }) => {
-      const idx = todoData.findIndex((el) => el.id === id);
-      const newArray = [...todoData.slice(0, idx), ...todoData.slice(idx + 1)];
-      return {
-        todoData: newArray,
-      };
-    });
-  };
+  deleteItem(ident) {
+    this.setState(({ todos }) => ({
+      todos: todos.filter(({ id }) => id !== ident),
+    }));
+  }
   editItem(ident, text) {
     this.setState(({ todoData }) => ({
-      todos: todoData.map((element) => {
+      todoData: todoData.map((element) => {
         if (element.id === ident) element.body = text;
         return element;
       }),
@@ -70,13 +60,13 @@ export default class App extends Component {
     });
   };
 
-  onToggleImportant = (id) => {
-    this.setState(({ todoData }) => {
-      return {
-        todoData: this.toggleProperty(todoData, id, 'important'),
-      };
-    });
-  };
+  // onToggleImportant = (id) => {
+  //   this.setState(({ todoData }) => {
+  //     return {
+  //       todoData: this.toggleProperty(todoData, id, 'important'),
+  //     };
+  //   });
+  // };
 
   filter(items, filter) {
     if (filter === 'all') {
@@ -99,8 +89,8 @@ export default class App extends Component {
   }
 
   render() {
-    const { todoData, filter } = this.state;
-    const visibleItems = this.filter(todoData, filter);
+    const { todoData, filter, editItem } = this.state;
+    const visibleItems = this.filter(todoData, filter, editItem);
     const doneCount = todoData.filter((el) => el.done).length;
     const todoCount = todoData.length - doneCount;
 
@@ -109,9 +99,9 @@ export default class App extends Component {
         <NewTaskForm onItemAdded={this.onItemAdded} />
         <TaskList
           todos={visibleItems}
-          onDeleted={this.deleteItem}
-          onToggleImportant={this.onToggleImportant}
-          onToggleDone={this.onToggleDone}
+          onDeleted={this.deleteItem.bind(this)}
+          // onToggleImportant={this.onToggleImportant}
+          onToggleDone={this.onToggleDone.bind(this)}
           editItem={this.editItem.bind(this)}
         />
         <Footer

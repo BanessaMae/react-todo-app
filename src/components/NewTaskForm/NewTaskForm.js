@@ -2,20 +2,20 @@ import React, { Component } from 'react';
 
 export default class NewTaskForm extends Component {
   state = {
-    label: '',
+    body: '',
   };
 
   onLabelChange = (e) => {
     this.setState({
-      label: e.target.value,
+      body: e.target.value,
     });
   };
 
   onSubmit = (e) => {
     e.preventDefault();
-    this.props.onItemAdded(this.state.label);
+    this.props.onItemAdded(this.state.body);
     this.setState({
-      label: '',
+      body: '',
     });
   };
 
@@ -29,7 +29,7 @@ export default class NewTaskForm extends Component {
             className="new-todo"
             placeholder="What needs to be done?"
             onChange={this.onLabelChange}
-            value={this.state.label}
+            value={this.state.body}
           ></input>
         </form>
       </header>

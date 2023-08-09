@@ -16,27 +16,27 @@ export default class Task extends Component {
     event.preventDefault();
     const {
       editItem,
-      item: { id },
+      todo: { id },
     } = this.props;
     editItem(id, this.state.value);
     this.setState({ value: '' });
     this.setState({ editing: false });
   }
   render() {
-    const { label, onDeleted, onToggleDone, done, date } = this.props;
-
-    // let classNames;
-
-    // if (done) {
-    //   classNames = 'completed';
-    // }
-
+    const { onDeleted, onToggleDone, todo } = this.props;
+    const { body, id, done, date } = todo;
     return (
       <li className={done ? 'completed' : this.state.editing ? 'editing' : null}>
         <div className="view">
-          <input className="toggle" type="checkbox" onClick={onToggleDone}></input>
-          <label>
-            <span className="description"> {label}</span>
+          <input
+            id={id}
+            className="toggle"
+            type="checkbox"
+            onChange={(event) => onToggleDone(id, event.target.done)}
+            checked={done}
+          />
+          <label htmlFor={id}>
+            <span className="description"> {body}</span>
             <span className="created">
               {`created ${formatDistanceToNow(date, {
                 includeSeconds: true,
@@ -46,14 +46,15 @@ export default class Task extends Component {
             </span>
             <button
               className="icon icon-edit"
+              type="button"
               onClick={() =>
                 this.setState(({ editing }) => ({
                   editing: !editing,
-                  value: this.props.item.label,
+                  value: this.props.todo.body,
                 }))
               }
             ></button>
-            <button className="icon icon-destroy" onClick={onDeleted}></button>
+            <button type="button" onClick={() => onDeleted(id)} className="icon icon-destroy" />
           </label>
         </div>
         {this.state.editing && (
@@ -74,16 +75,16 @@ export default class Task extends Component {
 Task.propTypes = {
   item: PropTypes.shape({
     id: PropTypes.number,
-    label: PropTypes.string,
+    body: PropTypes.string,
     done: PropTypes.bool,
     date: PropTypes.instanceOf(Date),
   }),
-  onDeleted: PropTypes.func.isRequired,
-  onToggleDone: PropTypes.func.isRequired,
+  // onDeleted: PropTypes.func.isRequired,
+  // onToggleDone: PropTypes.func.isRequired,
   // editItem: PropTypes.func.isRequired,
 };
 
 Task.defaultProps = {
   date: PropTypes.instanceOf(Date),
-  item: {},
+  todo: {},
 };
