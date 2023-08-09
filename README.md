@@ -1,2 +1,2 @@
 Todo App
-https://react-todo-app-indol-mu.vercel.app/
+https://react-todo-app-gido.vercel.app/
