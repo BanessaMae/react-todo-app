@@ -1,10 +1,9 @@
-import React, { Component } from 'react';
-import './Task.css';
+import React from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import RU from 'date-fns/locale/en-AU';
 import PropTypes from 'prop-types';
 
-export default class Task extends Component {
+class Task extends React.Component {
   constructor() {
     super();
     this.state = {
@@ -12,6 +11,7 @@ export default class Task extends Component {
       value: '',
     };
   }
+
   handleSubmit(event) {
     event.preventDefault();
     const {
@@ -22,71 +22,71 @@ export default class Task extends Component {
     this.setState({ value: '' });
     this.setState({ editing: false });
   }
+
   render() {
-    const { onDeleted, onToggleDone, todo } = this.props;
-    const { body, id, done, date } = todo;
+    const { changeCheck, todo, deleteItem } = this.props;
+    const { body, id, checked, date } = todo;
     return (
-      <React.Fragment>
-        <li className={done ? 'completed' : this.state.editing ? 'editing' : null}>
-          <div className="view">
+      <li className={checked ? 'completed' : this.state.editing ? 'editing' : null}>
+        <div className="view">
+          <input
+            id={id}
+            className="toggle"
+            type="checkbox"
+            onChange={(event) => changeCheck(id, event.target.checked)}
+            checked={checked}
+          />
+          <label htmlFor={id}>
+            <span className="description">{body}</span>
+            <span className="created">
+              {`created ${formatDistanceToNow(date, {
+                includeSeconds: true,
+                locale: RU,
+                addSuffix: true,
+              })}`}
+            </span>
+          </label>
+          <button
+            type="button"
+            onClick={() =>
+              this.setState(({ editing }) => ({
+                editing: !editing,
+                value: this.props.todo.body,
+              }))
+            }
+            className="icon icon-edit"
+          />
+          <button type="button" onClick={() => deleteItem(id)} className="icon icon-destroy" />
+        </div>
+        {this.state.editing && (
+          <form onSubmit={this.handleSubmit.bind(this)}>
             <input
-              id={id}
-              className="toggle"
-              type="checkbox"
-              onChange={(event) => onToggleDone(id, event.target.done)}
-              checked={done}
-            ></input>
-            <label htmlFor={id}>
-              <span className="description"> {body}</span>
-              <span className="created">
-                {`created ${formatDistanceToNow(date, {
-                  includeSeconds: true,
-                  locale: RU,
-                  addSuffix: true,
-                })}`}
-              </span>
-              <button
-                className="icon icon-edit"
-                type="button"
-                onClick={() =>
-                  this.setState(({ editing }) => ({
-                    editing: !editing,
-                    value: this.props.todo.body,
-                  }))
-                }
-              ></button>
-              <button className="icon icon-destroy" onClick={() => onDeleted(id)}></button>
-            </label>
-          </div>
-          {this.state.editing && (
-            <form onSubmit={this.handleSubmit.bind(this)}>
-              <input
-                onChange={(event) => this.setState({ value: event.target.value })}
-                type="text"
-                className="edit"
-                value={this.state.value}
-              />
-            </form>
-          )}
-        </li>
-      </React.Fragment>
+              onChange={(event) => this.setState({ value: event.target.value })}
+              type="text"
+              className="edit"
+              value={this.state.value}
+            />
+          </form>
+        )}
+      </li>
     );
   }
 }
 
 Task.propTypes = {
-  item: PropTypes.shape({
+  todo: PropTypes.shape({
     id: PropTypes.number,
     body: PropTypes.string,
-    done: PropTypes.bool,
+    checked: PropTypes.bool,
     date: PropTypes.instanceOf(Date),
   }),
-  onDeleted: PropTypes.func.isRequired,
-  onToggleDone: PropTypes.func.isRequired,
+  deleteItem: PropTypes.func.isRequired,
+  changeCheck: PropTypes.func.isRequired,
   editItem: PropTypes.func.isRequired,
 };
 
 Task.defaultProps = {
-  date: PropTypes.instanceOf(Date),
   todo: {},
 };
+
+export default Task;
