@@ -1,14 +1,19 @@
-import React from 'react';
+import React, { Component } from 'react';
 import { formatDistanceToNow } from 'date-fns';
 import RU from 'date-fns/locale/en-AU';
 import PropTypes from 'prop-types';
-
-class Task extends React.Component {
-  constructor() {
-    super();
+import { clsx } from 'clsx';
+// import Timer from '../Timer/timer';
+import './Task';
+export default class Task extends Component {
+  constructor(props) {
+    super(props);
     this.state = {
       editing: false,
       value: '',
+      totalTime: props.todo.minute * 60 + props.todo.second,
+      remainingTime: props.todo.minute * 60 + props.todo.second,
+      isPlaying: false,
     };
   }
 
@@ -22,10 +27,40 @@ class Task extends React.Component {
     this.setState({ value: '' });
     this.setState({ editing: false });
   }
+  componentDidMount() {
+    this.intervalId = setInterval(() => {
+      if (this.state.isPlaying) {
+        this.setState((prevState) => ({
+          remainingTime: prevState.remainingTime > 0 ? prevState.remainingTime - 1 : 0,
+        }));
+      }
+    }, 1000);
+  }
+
+  componentWillUnmount() {
+    clearInterval(this.intervalId);
+  }
+
+  handleStart = () => {
+    this.setState({ isPlaying: true });
+  };
+
+  handlePause = () => {
+    this.setState({ isPlaying: false });
+  };
+  // formatTime = (remainingTime) => {
+  //   const minuteString = String(Math.floor(remainingTime / 60)).padStart(2, '0');
+  //   const secondString = String(remainingTime % 60).padStart(2, '0');
+  //   return `${minuteString}:${secondString < 10 ? '0' : ''}${remainingTime}`;
+  // };
 
   render() {
     const { changeCheck, todo, deleteItem } = this.props;
     const { body, id, checked, date } = todo;
+    const { remainingTime } = this.state;
+    const minuteString = String(Math.floor(remainingTime / 60)).padStart(2, '0');
+    const secondString = String(remainingTime % 60).padStart(2, '0');
+    const isDanger = minuteString < 1;
     return (
       <li className={checked ? 'completed' : this.state.editing ? 'editing' : null}>
         <div className="view">
@@ -38,6 +73,15 @@ class Task extends React.Component {
           />
           <label htmlFor={id}>
             <span className="description">{body}</span>
+            <span className="description-info">
+              <button className="icon icon-play" onClick={this.handleStart} />
+              <button className="icon icon-pause" onClick={this.handlePause} />
+              <span className="created">
+                <span className={clsx(isDanger ? 'text-orange-600' : 'timer')}>
+                  {minuteString}:{secondString}
+                </span>
+              </span>
+            </span>
             <span className="created">
               {`created ${formatDistanceToNow(date, {
                 includeSeconds: true,
@@ -75,7 +119,7 @@ class Task extends React.Component {
 
 Task.propTypes = {
   todo: PropTypes.shape({
-    id: PropTypes.number,
+    // id: PropTypes.number,
     body: PropTypes.string,
     checked: PropTypes.bool,
     date: PropTypes.instanceOf(Date),
@@ -88,5 +132,3 @@ Task.propTypes = {
 Task.defaultProps = {
   todo: {},
 };
-
-export default Task;

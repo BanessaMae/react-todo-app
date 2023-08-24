@@ -9,17 +9,23 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      todos: [],
+      todos: [
+        { id: 1, body: 'Drink Tea', date: new Date(), checked: false, minute: '0.1', second: '0' },
+        { id: 2, body: 'Go School', date: new Date(), checked: false, minute: '0.2', second: '0' },
+        { id: 3, body: 'Eat Lunch', date: new Date(), checked: false, minute: '0.3', second: '0' },
+      ],
       filter: 'All',
     };
   }
 
-  addItem(value) {
+  addItem(value, min, sec) {
     const data = {
       id: new Date().getTime() + value,
       body: value,
       checked: false,
       date: new Date(),
+      minute: min,
+      second: sec,
     };
     this.setState(({ todos }) => ({ todos: [...todos, data] }));
   }
@@ -70,7 +76,13 @@ class App extends Component {
   render() {
     return (
       <div className="todoapp">
-        <NewTaskForm title="Todos" placeholder="What needs to be done?" addItem={this.addItem.bind(this)} />
+        <NewTaskForm
+          title="Todos"
+          placeholder="What needs to be done?"
+          addItem={this.addItem.bind(this)}
+          placeholderMin="Min"
+          placeholderSec="Sec"
+        />
         <TaskList
           changeCheck={this.changeCheck.bind(this)}
           editItem={this.editItem.bind(this)}
