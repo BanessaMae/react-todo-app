@@ -10,7 +10,7 @@ class App extends Component {
     super();
     this.state = {
       todos: [
-        { id: 1, body: 'Drink Tea', date: new Date(), checked: false, minute: '0.1', second: '0' },
+        { id: 1, body: 'Drink Tee', date: new Date(), checked: false, minute: '0.1', second: '0' },
         { id: 2, body: 'Go School', date: new Date(), checked: false, minute: '0.2', second: '0' },
         { id: 3, body: 'Eat Lunch', date: new Date(), checked: false, minute: '0.3', second: '0' },
       ],
