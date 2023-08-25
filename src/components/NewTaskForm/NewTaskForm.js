@@ -1,87 +1,76 @@
-import React from 'react';
-import PropTypes from 'prop-types';
-import './NewTaskForm';
-class NewTaskForm extends React.Component {
-  static defaultProps = {
-    addItem: () => {},
-  };
-  state = {
-    value: '',
-    min: null,
-    sec: null,
+import React, { useState } from 'react';
+import './NewTaskForm.css';
+
+export default function NewTaskForm({ addTodoItem }) {
+  const [body, setBody] = useState('');
+  const [min, setMin] = useState('');
+  const [sec, setSec] = useState('');
+
+  const onBodyChange = (e) => {
+    setBody(e.target.value);
   };
 
-  onLabelChange = (e) => {
-    this.setState({
-      value: e.target.value,
-    });
+  const onMinChange = (e) => {
+    setMin(e.target.value);
   };
 
-  handleSubmit = (event) => {
+  const onSecChange = (e) => {
+    setSec(e.target.value);
+  };
+
+  const onSubmit = (event) => {
     event.preventDefault();
-    if (this.state.value && this.state.value.trim() !== '') {
-      const newItem = {
-        value: this.state.value,
-        min: parseInt(this.state.min),
-        sec: parseInt(this.state.sec),
-      };
-      this.props.addItem(newItem.value, newItem.min, newItem.sec);
-      this.setState({ value: '', min: null, sec: null });
+    let minutes = parseInt(min);
+    let seconds = parseInt(sec);
+    if (isNaN(minutes)) {
+      minutes = 0;
     }
+    if (isNaN(seconds)) {
+      seconds = 0;
+    }
+    addTodoItem(body, minutes, seconds);
+    setBody('');
+    setMin('');
+    setSec('');
   };
-  onKeyDown = (e) => {
+
+  const onKeyDown = (e) => {
     if (e.keyCode === 13) {
       e.preventDefault();
-      this.handleSubmit(e);
+      onSubmit(e);
     }
   };
-  render() {
-    const { placeholder, title, placeholderMin, placeholderSec } = this.props;
-    const { value, min, sec } = this.state;
-    return (
-      <form className="header">
-        <h1>{title}</h1>
-        <label className="new-todo-form">
+
+  return (
+    <header className="header">
+      <h1>Todos</h1>
+      <form className="new-todo-form">
+        <button type="button">
           <input
             className="new-todo"
-            placeholder={placeholder}
-            onChange={(event) => this.setState({ value: event.target.value })}
-            value={value}
-            onKeyDown={this.onKeyDown}
+            placeholder="What needs to be done?"
+            onChange={onBodyChange}
+            onKeyDown={onKeyDown}
+            value={body}
             autoFocus
             required
           />
           <input
             className="new-todo-form__timer"
-            placeholder={placeholderMin}
-            onChange={(event) => this.setState({ min: parseInt(event.target.value) })}
-            value={min !== null ? min : ''}
+            placeholder="Min"
             type="number"
+            onChange={onMinChange}
+            value={min !== null ? min : ''}
           />
           <input
             className="new-todo-form__timer"
-            placeholder={placeholderSec}
-            onChange={(event) => this.setState({ sec: parseInt(event.target.value) })}
-            value={sec !== null ? sec : ''}
+            placeholder="Sec"
             type="number"
+            onChange={onSecChange}
+            value={sec !== null ? sec : ''}
           />
-        </label>
+        </button>
       </form>
-    );
-  }
+    </header>
+  );
 }
-
-NewTaskForm.propTypes = {
-  placeholder: PropTypes.string,
-  title: PropTypes.string,
-  addItem: PropTypes.func.isRequired,
-};
-
-NewTaskForm.defaultProps = {
-  placeholder: 'What needs to be done?',
-  placeholderMin: 'Min',
-  placeholderSec: 'Sec',
-  title: 'Todos',
-};
-
-export default NewTaskForm;

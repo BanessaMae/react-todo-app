@@ -1,103 +1,157 @@
-import React, { Component } from 'react';
+import React, { useState } from 'react';
+import PropTypes from 'prop-types';
 
 import './app.css';
-import Footer from '../Footer/Footer.js';
-import NewTaskForm from '../NewTaskForm/NewTaskForm.js';
+
+import Footer from '../Footer/Footer';
+import NewTaskForm from '../NewTaskForm/NewTaskForm';
 import TaskList from '../TaskList/TaskList';
 
-class App extends Component {
-  constructor() {
-    super();
-    this.state = {
-      todos: [
-        { id: 1, body: 'Drink Tee', date: new Date(), checked: false, minute: '0.1', second: '0' },
-        { id: 2, body: 'Go School', date: new Date(), checked: false, minute: '0.2', second: '0' },
-        { id: 3, body: 'Eat Lunch', date: new Date(), checked: false, minute: '0.3', second: '0' },
-      ],
-      filter: 'All',
+export default function App() {
+  const [todos, setTodos] = useState([
+    { id: 1, body: 'Drink Tee', done: false, edit: false, min: '1', sec: '0' },
+    { id: 2, body: 'Go School', done: false, edit: false, min: '2', sec: '0' },
+    { id: 3, body: 'Eat Lunch', done: false, edit: false, min: '3', sec: '0' },
+  ]);
+  const [filter, setFilter] = useState('all');
+
+  App.defaultProps = {
+    todos: [],
+    deleteItem: () => {},
+    editItem: () => {},
+    filter: 'all',
+    filterChange: () => {},
+    todoCount: 0,
+  };
+
+  App.propTypes = {
+    todos: PropTypes.array,
+    editItem: PropTypes.func,
+    deleteItem: PropTypes.func,
+    filter: PropTypes.string,
+    filterChange: PropTypes.func,
+    todoCount: PropTypes.number,
+  };
+
+  const createTodoItem = (body, min, sec) => {
+    return {
+      id: new Date().getTime() + body,
+      body,
+      done: false,
+      edit: false,
+      min,
+      sec,
     };
-  }
+  };
 
-  addItem(value, min, sec) {
-    const data = {
-      id: new Date().getTime() + value,
-      body: value,
-      checked: false,
-      date: new Date(),
-      minute: min,
-      second: sec,
-    };
-    this.setState(({ todos }) => ({ todos: [...todos, data] }));
-  }
+  const addTodoItem = (text, min, sec) => {
+    const newItem = createTodoItem(text, min, sec);
 
-  deleteItem(ident) {
-    this.setState(({ todos }) => ({
-      todos: todos.filter(({ id }) => id !== ident),
-    }));
-  }
-
-  changeCheck(ident, data) {
-    this.setState(({ todos }) => ({
-      todos: todos.map((element) => {
-        if (ident === element.id) element.checked = data;
-        return element;
-      }),
-    }));
-  }
-
-  editItem(ident, text) {
-    this.setState(({ todos }) => ({
-      todos: todos.map((element) => {
-        if (element.id === ident) element.body = text;
-        return element;
-      }),
-    }));
-  }
-
-  filteredItems() {
-    const { todos, filter } = this.state;
-    return todos.filter(({ checked }) => {
-      const all = filter === 'All';
-      const completed = filter === 'Completed';
-      return all ? true : completed ? checked === true : checked === false;
+    setTodos((prevTodos) => {
+      const newArr = [...prevTodos, newItem];
+      return newArr;
     });
-  }
+  };
 
-  clearCompleted() {
-    this.setState(({ todos }) => ({
-      todos: todos.filter((element) => !element.checked),
-    }));
-  }
+  const editItem = (id) => {
+    setTodos((prevTodos) => {
+      const idx = prevTodos.findIndex((el) => el.id === id);
+      const oldItem = prevTodos[idx];
+      const newItem = {
+        ...oldItem,
+        edit: !oldItem.edit,
+      };
 
-  changeFilter(data) {
-    this.setState({ filter: data });
-  }
+      let newTodos = [...prevTodos.slice(0, idx), newItem, ...prevTodos.slice(idx + 1)];
 
-  render() {
-    return (
-      <div className="todoapp">
-        <NewTaskForm
-          title="Todos"
-          placeholder="What needs to be done?"
-          addItem={this.addItem.bind(this)}
-          placeholderMin="Min"
-          placeholderSec="Sec"
-        />
-        <TaskList
-          changeCheck={this.changeCheck.bind(this)}
-          editItem={this.editItem.bind(this)}
-          deleteItem={this.deleteItem.bind(this)}
-          todos={this.filteredItems()}
-        />
-        <Footer
-          changeFilter={this.changeFilter.bind(this)}
-          clearCompleted={this.clearCompleted.bind(this)}
-          lefts={this.state.todos.filter(({ checked }) => !checked).length}
-          filter={this.state.filter}
-        />
-      </div>
-    );
-  }
+      return newTodos;
+    });
+  };
+
+  const onSubmitEdit = (event, id) => {
+    event.preventDefault();
+    setTodos((prevTodos) => {
+      const idx = prevTodos.findIndex((item) => item.id === id);
+      const oldItem = prevTodos[idx];
+
+      const newItem = {
+        ...oldItem,
+        edit: !oldItem.edit,
+        body: event.target[0].value,
+      };
+
+      let newTodos = [...prevTodos.slice(0, idx), newItem, ...prevTodos.slice(idx + 1)];
+
+      return newTodos;
+    });
+  };
+
+  const deleteItem = (id) => {
+    setTodos((prevTodos) => {
+      const idx = prevTodos.findIndex((el) => el.id === id);
+
+      let newArray = [...prevTodos.slice(0, idx), ...prevTodos.slice(idx + 1)];
+
+      return newArray;
+    });
+  };
+
+  const toggleProperty = (arr, id, propName) => {
+    const idx = arr.findIndex((el) => el.id === id);
+
+    const oldItem = arr[idx];
+    const newItem = {
+      ...oldItem,
+      [propName]: !oldItem[propName],
+    };
+
+    return [...arr.slice(0, idx), newItem, ...arr.slice(idx + 1)];
+  };
+
+  const onToggleDone = (id) => {
+    setTodos((prevTodos) => {
+      return toggleProperty(prevTodos, id, 'done');
+    });
+  };
+
+  const filterItems = (items, filter) => {
+    switch (filter) {
+      case 'all':
+        return items;
+      case 'active':
+        return items.filter((item) => !item.done);
+      case 'done':
+        return items.filter((item) => item.done);
+      default:
+        return items;
+    }
+  };
+
+  const clearCompleted = () => {
+    setTodos((prevTodos) => prevTodos.filter((element) => !element.done));
+  };
+
+  const doneCount = todos.filter((el) => el.done).length;
+  const todoCount = todos.length - doneCount;
+
+  return (
+    <section className="todoapp">
+      <NewTaskForm addTodoItem={addTodoItem} />
+      <TaskList
+        todos={filterItems(todos, filter)}
+        deleteItem={deleteItem}
+        editItem={editItem}
+        onSubmitEdit={onSubmitEdit}
+        onToggleDone={onToggleDone}
+      />
+      <Footer
+        todos={todos}
+        todoCount={todoCount}
+        filter={filter}
+        filterChange={setFilter}
+        deleteItem={deleteItem}
+        clearCompleted={clearCompleted}
+      />
+    </section>
+  );
 }
-
-export default App;
